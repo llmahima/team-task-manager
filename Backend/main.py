@@ -11,7 +11,13 @@ app = FastAPI(title="Team Task Manager API")
 # CORS Configuration - MUST BE BEFORE ROUTERS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://alluring-creation-production.up.railway.app",
+        "http://localhost:5173",
+        "http://localhost:4173",
+        "http://localhost:5175",
+        "*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
