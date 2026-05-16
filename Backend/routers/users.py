@@ -10,24 +10,30 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/signup", response_model=UserResponse)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = get_password_hash(user.password)
-    # Use uppercase to match database Enum
-    role = RoleEnum.ADMIN if user.email == "admin@gmail.com" else RoleEnum.MEMBER
-    
-    new_user = User(
-        name=user.name,
-        email=user.email,
-        password_hash=hashed_password,
-        role=role
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    try:
+        db_user = db.query(User).filter(User.email == user.email).first()
+        if db_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        hashed_password = get_password_hash(user.password)
+        # Use uppercase to match database Enum
+        role = RoleEnum.ADMIN if user.email == "admin@gmail.com" else RoleEnum.MEMBER
+        
+        new_user = User(
+            name=user.name,
+            email=user.email,
+            password_hash=hashed_password,
+            role=role
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except Exception as e:
+        print(f"Signup error: {e}")
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
