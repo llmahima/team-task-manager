@@ -16,8 +16,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Email already registered")
         
         hashed_password = get_password_hash(user.password)
-        # Use uppercase to match database Enum
-        role = RoleEnum.ADMIN if user.email == "admin@gmail.com" else RoleEnum.MEMBER
+        # Assign roles based on email
+        role = "admin" if user.email == "admin@gmail.com" else "member"
         
         new_user = User(
             name=user.name,

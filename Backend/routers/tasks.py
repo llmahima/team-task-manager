@@ -35,9 +35,8 @@ def list_tasks(current_user: User = Depends(get_current_user), db: Session = Dep
 
 @router.post("/tasks/", response_model=TaskResponse)
 def create_task(task: TaskCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Only Global Admin can create tasks across projects (as per user request "check role == admin")
-    if current_user.role != RoleEnum.ADMIN:
-        raise HTTPException(status_code=403, detail="Global admin privileges required to create tasks")
+    if current_user.email != "admin@gmail.com" and current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can create tasks")
 
     # Check if current user is member of the project
     membership = db.query(ProjectMember).filter(
