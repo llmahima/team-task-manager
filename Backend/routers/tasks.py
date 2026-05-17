@@ -35,7 +35,7 @@ def list_tasks(current_user: User = Depends(get_current_user), db: Session = Dep
 
 @router.post("/tasks/", response_model=TaskResponse)
 def create_task(task: TaskCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if current_user.email != "admin@gmail.com" and current_user.role != "admin":
+    if current_user.email != "admin@gmail.com":
         raise HTTPException(status_code=403, detail="Only admins can create tasks")
 
     # Check if current user is member of the project
