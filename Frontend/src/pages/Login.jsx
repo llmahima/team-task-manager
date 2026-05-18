@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Mail, Lock, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -22,73 +21,99 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] p-6">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md glass p-8 rounded-3xl border border-white/10 shadow-2xl"
-      >
-        <div className="text-center mb-8">
-          <div className="inline-flex p-4 rounded-2xl bg-primary-500/10 text-primary-400 mb-4">
-            <LogIn size={32} />
+    <div className="min-h-screen flex flex-col md:flex-row font-sans">
+      {/* Left Side (60%) */}
+      <div className="w-full md:w-[60%] bg-[#F0F4F8] p-8 md:p-16 flex flex-col justify-between">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4 leading-tight">
+            Manage Your Team's Work, Together
+          </h1>
+          <p className="text-lg text-slate-600 mb-12">
+            Assign tasks, track progress, collaborate seamlessly
+          </p>
+
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3 text-slate-700">
+              <div className="flex-shrink-0 bg-blue-100 p-1 rounded-full text-blue-600">
+                <Check size={20} />
+              </div>
+              <span className="text-lg">Role-based access for Admin & Members</span>
+            </div>
+            <div className="flex items-center space-x-3 text-slate-700">
+              <div className="flex-shrink-0 bg-blue-100 p-1 rounded-full text-blue-600">
+                <Check size={20} />
+              </div>
+              <span className="text-lg">Real-time task tracking & dashboard</span>
+            </div>
+            <div className="flex items-center space-x-3 text-slate-700">
+              <div className="flex-shrink-0 bg-blue-100 p-1 rounded-full text-blue-600">
+                <Check size={20} />
+              </div>
+              <span className="text-lg">Project-based team collaboration</span>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400">Log in to manage your team tasks</p>
         </div>
 
-        {error && (
-          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 px-4 py-3 rounded-xl text-sm mb-6 text-center">
-            {error}
-          </div>
-        )}
+        <div className="mt-16 md:mt-0">
+          <p className="text-sm font-medium text-slate-500">Trusted by teams at INNOIRA</p>
+        </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+      {/* Right Side (40%) */}
+      <div className="w-full md:w-[40%] bg-white p-8 md:p-16 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-[#0A2540] mb-2">Welcome Back</h2>
+            <p className="text-slate-500">Please enter your details to sign in.</p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm mb-6 border border-red-100">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
               <input
                 type="email"
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
-                placeholder="john@example.com"
+                className="w-full border border-slate-300 rounded-lg py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0A2540] focus:border-transparent transition-all"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
               <input
                 type="password"
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-all"
-                placeholder="••••••••"
+                className="w-full border border-slate-300 rounded-lg py-2.5 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0A2540] focus:border-transparent transition-all"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-primary-500/25 flex items-center justify-center space-x-2 group"
-          >
-            <span>Login</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="w-full bg-[#0A2540] hover:bg-[#06182C] text-white font-medium py-3 rounded-lg transition-colors mt-2"
+            >
+              Sign In
+            </button>
+          </form>
 
-        <p className="mt-8 text-center text-slate-400 text-sm">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-primary-400 hover:text-primary-300 font-semibold">
-            Sign up for free
-          </Link>
-        </p>
-      </motion.div>
+          <p className="mt-8 text-center text-slate-600">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-[#0A2540] hover:underline font-semibold">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

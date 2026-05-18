@@ -91,95 +91,108 @@ const Tasks = () => {
   };
 
   const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(search.toLowerCase()) || 
-                         task.description?.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = task.title.toLowerCase().includes(search.toLowerCase()) ||
+      task.description?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  return (
-    <div className="pt-24 px-6 max-w-7xl mx-auto pb-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Tasks</h1>
-          <p className="text-slate-400">
-            {user?.role === 'ADMIN' ? "Manage all team tasks" : "Tasks assigned to you"}
-          </p>
-        </div>
-        {user?.role === 'ADMIN' && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary-500/25 flex items-center space-x-2 w-full md:w-auto justify-center"
-          >
-            <Plus size={20} />
-            <span>Create Task</span>
-          </button>
-        )}
-      </div>
+  const isAdmin = user?.role === 'ADMIN';
 
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="relative flex-grow">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-          <input
-            type="text"
-            placeholder="Search tasks..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+  return (
+    <div className="w-full text-[#1F2937] font-sans pb-12 pt-4">
+      <div className="max-w-[1200px] mx-auto space-y-8">
+        
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-[#1F2937] tracking-tight">Tasks</h1>
+            <p className="text-[#6B7280] text-sm font-medium mt-1">
+              {isAdmin ? "Manage all team tasks" : "Tasks assigned to you"}
+            </p>
+          </div>
+          {isAdmin && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="bg-[#1E3A5F] hover:bg-[#152943] text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center space-x-2 text-sm self-start sm:self-center"
+            >
+              <Plus size={18} />
+              <span>Create Task</span>
+            </button>
+          )}
         </div>
-        <div className="flex gap-4">
-          <div className="relative">
-            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+
+        {/* Filter and Search Section */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Search bar */}
+          <div className="relative flex-grow">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <input
+              type="text"
+              placeholder="Search tasks by title or details..."
+              className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-[#1F2937] placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/20 transition-all shadow-sm text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          
+          {/* Status Dropdown */}
+          <div className="relative min-w-[160px]">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <select
-              className="bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-10 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none"
+              className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-10 text-[#1F2937] focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/20 shadow-sm appearance-none font-bold text-sm cursor-pointer"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="all" className="bg-[#1e293b]">All Status</option>
-              <option value="todo" className="bg-[#1e293b]">To Do</option>
-              <option value="in_progress" className="bg-[#1e293b]">In Progress</option>
-              <option value="done" className="bg-[#1e293b]">Done</option>
+              <option value="all" className="bg-white">All Status</option>
+              <option value="todo" className="bg-white">To Do</option>
+              <option value="in_progress" className="bg-white">In Progress</option>
+              <option value="done" className="bg-white">Completed</option>
             </select>
           </div>
         </div>
-      </div>
 
-      {loading ? (
-        <div className="text-white">Loading tasks...</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <motion.div
-                  key={task.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  layout
-                  onClick={() => setSelectedTask(task)}
-                  className="cursor-pointer"
-                >
-                  <TaskCard task={task} hideStatusDropdown={true} />
-                </motion.div>
-              ))
-            ) : (
-              <div className="col-span-full py-20 text-center glass rounded-3xl border border-white/10">
-                <CheckSquare size={48} className="mx-auto text-slate-600 mb-4" />
-                <p className="text-slate-400">No tasks found.</p>
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
+        {/* Task Cards Grid */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 space-y-4">
+            <div className="w-10 h-10 border-4 border-[#1E3A5F] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-[#6B7280] font-medium animate-pulse text-sm">Loading task workspace...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredTasks.length > 0 ? (
+                filteredTasks.map((task) => (
+                  <motion.div
+                    key={task.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    layout
+                    onClick={() => setSelectedTask(task)}
+                    className="cursor-pointer"
+                  >
+                    <TaskCard task={task} hideStatusDropdown={true} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full py-20 text-center bg-white rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 max-w-md mx-auto w-full">
+                  <CheckSquare size={48} className="mx-auto text-slate-300 mb-4" />
+                  <h3 className="text-lg font-bold text-[#1F2937] mb-1">No Tasks Found</h3>
+                  <p className="text-[#6B7280] text-sm">Create a task to get started.</p>
+                </div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
 
       {/* Task Detail Modal */}
       <AnimatePresence>
         {selectedTask && (
-          <TaskModal 
-            task={selectedTask} 
-            onClose={() => setSelectedTask(null)} 
+          <TaskModal
+            task={selectedTask}
+            onClose={() => setSelectedTask(null)}
             onUpdate={fetchTasks}
             userRole={user?.role}
           />
@@ -189,88 +202,81 @@ const Tasks = () => {
       {/* Create Task Modal */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/50 backdrop-blur-sm">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-              className="absolute inset-0 bg-[#0f172a]/80 backdrop-blur-sm"
-            ></motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg glass p-8 rounded-3xl border border-white/10 shadow-2xl overflow-y-auto max-h-[90vh]"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white p-8 rounded-2xl border border-slate-200 shadow-2xl text-slate-800 font-sans overflow-y-auto max-h-[90vh]"
             >
-              <h2 className="text-2xl font-bold text-white mb-6">Create New Task</h2>
+              <h2 className="text-2xl font-bold text-[#1F2937] mb-6">Create Task</h2>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5 flex items-center">
-                    <Layout size={14} className="mr-2" /> Project
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center">
+                    <Layout size={14} className="mr-2 text-slate-400" /> Project
                   </label>
                   <select
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/30 transition-all text-sm font-bold"
                     value={formData.project_id}
                     onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
                   >
-                    <option value="" disabled className="bg-[#1e293b]">Select a project</option>
+                    <option value="" disabled className="bg-white">Select a workspace</option>
                     {projects.map(p => (
-                      <option key={p.id} value={p.id} className="bg-[#1e293b]">{p.name}</option>
+                      <option key={p.id} value={p.id} className="bg-white">{p.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5 flex items-center">
-                    <Plus size={14} className="mr-2" /> Assign To
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center">
+                    <Plus size={14} className="mr-2 text-slate-400" /> Assign To
                   </label>
                   <select
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/30 transition-all text-sm font-bold"
                     value={formData.assigned_to_id}
                     onChange={(e) => setFormData({ ...formData, assigned_to_id: e.target.value })}
                   >
-                    <option value="" className="bg-[#1e293b]">Unassigned</option>
+                    <option value="" className="bg-white">Unassigned</option>
                     {projectMembers.map(m => (
-                      <option key={m.id} value={m.user_id} className="bg-[#1e293b]">{m.user.name}</option>
+                      <option key={m.id} value={m.user_id} className="bg-white">{m.user.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Title</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Title</label>
                   <input
                     type="text"
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none"
-                    placeholder="Task title..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/30 transition-all text-sm"
+                    placeholder="e.g. Design Landing Page"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1.5">Description</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Description</label>
                   <textarea
                     rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none resize-none"
-                    placeholder="Task details..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#1E3A5F]/30 transition-all text-sm resize-none"
+                    placeholder="Describe what needs to be done..."
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Due Date</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Due Date</label>
                     <input
                       type="date"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none"
                       value={formData.due_date}
                       onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Priority</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Priority</label>
                     <select
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-slate-800 text-sm focus:outline-none font-bold"
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                     >
@@ -280,17 +286,18 @@ const Tasks = () => {
                     </select>
                   </div>
                 </div>
+                
                 <div className="flex space-x-4 pt-4">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-white transition-colors"
+                    className="flex-1 px-6 py-3 rounded-xl font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all text-sm"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-primary-500/25"
+                    className="flex-1 bg-[#1E3A5F] hover:bg-[#152943] text-white px-6 py-3 rounded-xl font-bold transition-all shadow-md text-sm"
                   >
                     Create Task
                   </button>

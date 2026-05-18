@@ -17,7 +17,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         
         hashed_password = get_password_hash(user.password)
         # Assign roles based on email
-        role = "admin" if user.email == "admin@gmail.com" else "member"
+        role = RoleEnum.ADMIN if user.email == "admin@gmail.com" else RoleEnum.MEMBER
         
         new_user = User(
             name=user.name,
